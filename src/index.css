@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: 17 17 17;
+    --color-secondary: 107 114 128;
+    --color-background: 248 248 246;
+  }
+  
+  html.dark {
+    --color-primary: 248 248 246;
+    --color-secondary: 156 163 175;
+    --color-background: 17 17 17;
+  }
+
+  body {
+    @apply bg-background text-primary font-sans antialiased overflow-x-hidden;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* Custom Cursor */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  background-color: rgba(17, 17, 17, 0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+  transition: transform 0.15s ease;
+}
+
+.custom-cursor.hovering {
+  transform: scale(2.5);
+  background-color: rgba(255, 255, 255, 0.8);
+}
