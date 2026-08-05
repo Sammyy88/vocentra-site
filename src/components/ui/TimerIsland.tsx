@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, Square, X, Timer } from 'lucide-react';
-import { useGlobalClickSound } from '../../hooks/useClickSound';
+
 import { useStore } from '../../store/useStore';
 
 export const TimerIsland: React.FC = () => {
@@ -11,7 +11,7 @@ export const TimerIsland: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isRinging, setIsRinging] = useState(false);
   
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Sound effect for alarm
   const playAlarm = () => {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, Share2, Heart, Copy } from 'lucide-react';
+import { Volume2, Heart, Copy } from 'lucide-react';
 import type { WordEntry } from '../../data/dictionary';
 import { useStore } from '../../store/useStore';
 import { TimerIsland } from './TimerIsland';
@@ -50,14 +50,13 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
     // Scrambling effect
     setIsScrambling(true);
     let iterations = 0;
-    const maxIterations = 10;
     const targetWord = currentWord.word.toUpperCase();
     
     const interval = setInterval(() => {
       setDisplayWord(
         targetWord
           .split("")
-          .map((letter, index) => {
+          .map((_, index) => {
             if (index < iterations) {
               return targetWord[index];
             }

@@ -1,6 +1,6 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Environment, Float, MeshDistortMaterial, Sparkles, OrbitControls } from '@react-three/drei';
+import { Environment, Float, MeshDistortMaterial, Sparkles } from '@react-three/drei';
 import { EffectComposer, Bloom, DepthOfField, Noise } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { useStore } from '../../store/useStore';
@@ -76,7 +76,7 @@ export const Scene: React.FC = () => {
         <MouseParallax />
 
         {/* Post Processing */}
-        <EffectComposer disableNormalPass>
+        <EffectComposer>
           <Bloom luminanceThreshold={1} mipmapBlur intensity={0.5} />
           <DepthOfField focusDistance={0} focalLength={0.02} bokehScale={2} height={480} />
           <Noise opacity={0.02} />
