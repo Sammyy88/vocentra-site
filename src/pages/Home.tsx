@@ -39,7 +39,7 @@ export const Home: React.FC = () => {
   }, [handleDiscover]);
 
   return (
-    <main className="relative z-10 w-full min-h-screen flex items-center justify-center pointer-events-auto pt-24">
+    <main className="relative z-10 w-full min-h-screen flex items-center justify-center pointer-events-auto pt-20 md:pt-0 pb-10 md:pb-0">
       <WordCard 
         currentWord={currentWord}
         currentPrompt={currentPrompt}

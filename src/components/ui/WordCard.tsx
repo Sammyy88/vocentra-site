@@ -103,7 +103,7 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
   }, [currentWord]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen pt-24 md:pt-0 pb-10 md:pb-0 px-4 md:px-6 relative z-10">
+    <div className="flex flex-col items-center justify-center w-full relative z-10">
       
       <AnimatePresence mode="wait">
         {!currentWord ? (
