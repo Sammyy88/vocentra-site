@@ -230,8 +230,7 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
               Ready, for Domination?
             </h2>
             <p className="text-secondary/80 mb-8 text-sm md:text-base font-light tracking-wide leading-relaxed">
-              We don't just practice. We transform.<br/>
-              From ideas to impact — step into what's possible.
+              Practice Speaking. Build Confidence.
             </p>
 
             <div className="mb-10 w-full max-w-xs mx-auto">
