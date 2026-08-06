@@ -17,7 +17,7 @@ function App() {
   useGlobalClickSound();
   
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
-  const { preferredCategory, setPreferredCategory, favoriteWords, removeFavorite, darkMode, toggleDarkMode } = useStore();
+  const { favoriteWords, removeFavorite, darkMode, toggleDarkMode } = useStore();
 
   useEffect(() => {
     if (darkMode) {
