@@ -348,35 +348,73 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
         {speakTimerActive && (
           <motion.div
             initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-            animate={{ opacity: 1, backdropFilter: 'blur(16px)' }}
+            animate={{ opacity: 1, backdropFilter: 'blur(24px)' }}
             exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-            className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-background/60"
+            className="fixed inset-0 z-[200] flex flex-col items-center justify-between py-20 bg-background/90 dark:bg-[#111111]/90"
           >
-            <button
-              onClick={() => {
-                setSpeakTimerActive(false);
-                setSpeakTimeLeft(60);
-              }}
-              className="absolute top-8 right-8 text-secondary hover:text-primary transition-colors bg-white/10 dark:bg-black/10 p-3 rounded-full backdrop-blur-md border border-white/20 dark:border-white/10"
+            {/* Top: Word Name */}
+            <motion.h3 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-xl md:text-2xl tracking-[0.2em] uppercase font-bold text-[#D07C50] drop-shadow-sm"
             >
-              <X size={24} />
-            </button>
+              {currentWord?.word}
+            </motion.h3>
 
+            {/* Center: Circular SVG Timer */}
             <motion.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              className="relative flex flex-col items-center justify-center w-64 h-64 md:w-80 md:h-80 rounded-full bg-red-500/10 dark:bg-red-500/5 backdrop-blur-2xl border border-red-500/30 shadow-[0_0_80px_rgba(239,68,68,0.2)]"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative flex items-center justify-center w-72 h-72 md:w-96 md:h-96"
             >
-              <div className="absolute inset-0 rounded-full border-4 border-red-500/20 animate-[spin_10s_linear_infinite]" />
-              <div className="absolute inset-2 rounded-full border border-red-500/10 animate-[spin_15s_linear_infinite_reverse]" />
+              <svg className="absolute inset-0 w-full h-full -rotate-90 drop-shadow-2xl" viewBox="0 0 100 100">
+                <circle 
+                  className="text-[#333333]" 
+                  strokeWidth="4" 
+                  stroke="currentColor" 
+                  fill="transparent" 
+                  r="46" 
+                  cx="50" 
+                  cy="50" 
+                />
+                <circle 
+                  className="text-[#D07C50] transition-all duration-1000 ease-linear" 
+                  strokeWidth="4" 
+                  strokeLinecap="round" 
+                  stroke="currentColor" 
+                  fill="transparent" 
+                  r="46" 
+                  cx="50" 
+                  cy="50" 
+                  strokeDasharray="289.026" 
+                  strokeDashoffset={289.026 * (1 - speakTimeLeft / 60)} 
+                />
+              </svg>
               
-              <span className="font-bold font-mono text-7xl md:text-8xl text-red-500 tracking-tighter drop-shadow-md animate-pulse">
-                {speakTimeLeft}
+              <span className="font-serif text-[5rem] md:text-[6.5rem] text-[#D07C50] tracking-tighter" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                {Math.floor(speakTimeLeft / 60)}:{(speakTimeLeft % 60).toString().padStart(2, '0')}
               </span>
-              <span className="mt-4 text-sm uppercase tracking-[0.3em] font-semibold text-red-500/70">
-                Speak
+            </motion.div>
+
+            {/* Bottom: Speak & Close */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col items-center gap-6"
+            >
+              <span className="text-xl md:text-2xl font-light text-primary/80 tracking-wide">
+                Speak.
               </span>
+              <button
+                onClick={() => {
+                  setSpeakTimerActive(false);
+                  setSpeakTimeLeft(60);
+                }}
+                className="text-secondary/60 hover:text-primary transition-colors text-sm uppercase tracking-widest underline underline-offset-[6px]"
+              >
+                Close
+              </button>
             </motion.div>
           </motion.div>
         )}
