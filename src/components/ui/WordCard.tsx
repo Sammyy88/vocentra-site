@@ -44,6 +44,32 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
     }
   };
 
+  const playChime = () => {
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime); // A5
+      osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.15); // Slide to A6
+      
+      gainNode.gain.setValueAtTime(0, ctx.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.05);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.8);
+      
+      osc.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      
+      osc.start();
+      osc.stop(ctx.currentTime + 0.8);
+    } catch (e) {
+      console.error("Audio API not supported or blocked");
+    }
+  };
+
   useEffect(() => {
     if (!currentWord) return;
     
@@ -77,7 +103,7 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
   }, [currentWord]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen pt-28 pb-10 px-4 md:px-6 relative z-10">
+    <div className="flex flex-col items-center justify-center min-h-screen pt-24 md:pt-0 pb-10 md:pb-0 px-4 md:px-6 relative z-10">
       
       <AnimatePresence mode="wait">
         {!currentWord ? (
@@ -114,10 +140,14 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
             </div>
 
             <button
-              onClick={onDiscover}
-              className="px-8 py-3.5 bg-primary/5 dark:bg-white/5 border border-primary/20 dark:border-white/20 text-primary rounded-xl font-medium tracking-wide hover:bg-primary/10 dark:hover:bg-white/10 hover:shadow-[0_0_20px_rgba(17,17,17,0.1)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] transition-all duration-300 ease-out"
+              onClick={() => {
+                playChime();
+                onDiscover();
+              }}
+              className="relative overflow-hidden group px-10 py-4 bg-primary text-background rounded-2xl font-bold tracking-wide shadow-[0_0_40px_-10px_rgba(17,17,17,0.5)] dark:shadow-[0_0_40px_-10px_rgba(255,255,255,0.4)] hover:shadow-[0_0_60px_-10px_rgba(17,17,17,0.8)] dark:hover:shadow-[0_0_60px_-10px_rgba(255,255,255,0.7)] hover:scale-105 transition-all duration-500 ease-out"
             >
-              Explore your challenge
+              <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 dark:via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+              <span className="relative z-10 drop-shadow-sm">Explore your challenge</span>
             </button>
           </motion.div>
         ) : (
