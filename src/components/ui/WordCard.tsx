@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, Heart, Copy, Mic } from 'lucide-react';
+import { Volume2, Heart, Copy, Mic, X } from 'lucide-react';
 import type { WordEntry } from '../../data/dictionary';
 import { useStore } from '../../store/useStore';
 import { TimerIsland } from './TimerIsland';
@@ -320,25 +320,12 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
             <div className={`mt-12 flex items-center gap-4 transition-all duration-700 ${isScrambling ? 'opacity-20 blur-sm pointer-events-none' : 'opacity-100 blur-0'}`}>
               <button
                 onClick={() => {
-                  if (speakTimerActive) {
-                    setSpeakTimerActive(false);
-                    setSpeakTimeLeft(60);
-                  } else {
-                    setSpeakTimerActive(true);
-                    setSpeakTimeLeft(60);
-                  }
+                  setSpeakTimerActive(true);
+                  setSpeakTimeLeft(60);
                 }}
-                className={`shrink-0 w-[3.5rem] h-[3.5rem] rounded-full flex items-center justify-center transition-all duration-300 ${
-                  speakTimerActive 
-                    ? 'bg-red-500/20 dark:bg-red-500/20 backdrop-blur-md border border-red-500/40 shadow-[0_0_20px_rgba(239,68,68,0.3)] text-red-500' 
-                    : 'bg-red-50 hover:bg-red-100 dark:bg-red-500/5 dark:hover:bg-red-500/10 text-red-500/70 hover:text-red-500 border border-red-500/20'
-                }`}
+                className="shrink-0 w-[3.5rem] h-[3.5rem] rounded-full flex items-center justify-center transition-all duration-300 bg-red-50 hover:bg-red-100 dark:bg-red-500/5 dark:hover:bg-red-500/10 text-red-500/70 hover:text-red-500 border border-red-500/20"
               >
-                {speakTimerActive ? (
-                  <span className="font-bold font-mono text-sm animate-[pulse_1s_ease-in-out_infinite]">{speakTimeLeft}</span>
-                ) : (
-                  <Mic size={22} />
-                )}
+                <Mic size={22} />
               </button>
 
               <button
@@ -353,6 +340,44 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
                 Next Word
               </button>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {speakTimerActive && (
+          <motion.div
+            initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+            animate={{ opacity: 1, backdropFilter: 'blur(16px)' }}
+            exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+            className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-background/60"
+          >
+            <button
+              onClick={() => {
+                setSpeakTimerActive(false);
+                setSpeakTimeLeft(60);
+              }}
+              className="absolute top-8 right-8 text-secondary hover:text-primary transition-colors bg-white/10 dark:bg-black/10 p-3 rounded-full backdrop-blur-md border border-white/20 dark:border-white/10"
+            >
+              <X size={24} />
+            </button>
+
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="relative flex flex-col items-center justify-center w-64 h-64 md:w-80 md:h-80 rounded-full bg-red-500/10 dark:bg-red-500/5 backdrop-blur-2xl border border-red-500/30 shadow-[0_0_80px_rgba(239,68,68,0.2)]"
+            >
+              <div className="absolute inset-0 rounded-full border-4 border-red-500/20 animate-[spin_10s_linear_infinite]" />
+              <div className="absolute inset-2 rounded-full border border-red-500/10 animate-[spin_15s_linear_infinite_reverse]" />
+              
+              <span className="font-bold font-mono text-7xl md:text-8xl text-red-500 tracking-tighter drop-shadow-md animate-pulse">
+                {speakTimeLeft}
+              </span>
+              <span className="mt-4 text-sm uppercase tracking-[0.3em] font-semibold text-red-500/70">
+                Speak
+              </span>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
