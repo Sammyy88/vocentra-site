@@ -16,7 +16,7 @@ const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, onDiscover }) => {
   const [displayWord, setDisplayWord] = useState('');
   const [isScrambling, setIsScrambling] = useState(false);
-  const { addFavorite, removeFavorite, favoriteWords } = useStore();
+  const { addFavorite, removeFavorite, favoriteWords, preferredCategory, setPreferredCategory } = useStore();
 
   const isFavorite = currentWord ? favoriteWords.includes(currentWord.word) : false;
 
@@ -77,7 +77,7 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
   }, [currentWord]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-6 relative z-10">
+    <div className="flex flex-col items-center justify-center min-h-screen pt-28 pb-10 px-4 md:px-6 relative z-10">
       
       <AnimatePresence mode="wait">
         {!currentWord ? (
@@ -92,10 +92,27 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
             <h1 className="text-5xl md:text-7xl font-serif font-medium tracking-tight text-primary mb-6 leading-tight">
               Ready, for Domination?
             </h1>
-            <p className="text-secondary/80 mb-12 text-sm md:text-base font-light tracking-wide leading-relaxed">
+            <p className="text-secondary/80 mb-8 text-sm md:text-base font-light tracking-wide leading-relaxed">
               We don't just practice. We transform.<br/>
               From ideas to impact — step into what's possible.
             </p>
+
+            <div className="mb-10 w-full max-w-xs mx-auto">
+              <label className="text-xs uppercase tracking-widest text-secondary font-semibold mb-3 block">Focus Area</label>
+              <select 
+                value={preferredCategory}
+                onChange={(e) => setPreferredCategory(e.target.value)}
+                className="w-full bg-white/50 dark:bg-black/50 backdrop-blur-md border border-primary/20 dark:border-white/20 rounded-xl px-4 py-3 text-primary text-sm font-medium hover:border-primary/50 transition-colors cursor-pointer outline-none text-center shadow-sm"
+              >
+                <option value="Random">Random Mix</option>
+                <option value="Everyday Life">Everyday Life</option>
+                <option value="Personal Development">Personal Development</option>
+                <option value="Technology">Technology</option>
+                <option value="Society & Current Issues">Society & Current Issues</option>
+                <option value="Opinion & Abstract Topics">Opinion & Abstract</option>
+              </select>
+            </div>
+
             <button
               onClick={onDiscover}
               className="px-8 py-3.5 bg-primary/5 dark:bg-white/5 border border-primary/20 dark:border-white/20 text-primary rounded-xl font-medium tracking-wide hover:bg-primary/10 dark:hover:bg-white/10 hover:shadow-[0_0_20px_rgba(17,17,17,0.1)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] transition-all duration-300 ease-out"
@@ -114,7 +131,18 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
             <TimerIsland />
             
             <div className="flex w-full justify-between items-center mb-6 text-secondary mt-2">
-              <span className="text-xs uppercase tracking-widest font-semibold">{currentWord.category}</span>
+              <select 
+                value={preferredCategory}
+                onChange={(e) => setPreferredCategory(e.target.value)}
+                className="text-xs uppercase tracking-widest font-semibold bg-transparent hover:text-primary transition-colors cursor-pointer outline-none appearance-none border-b border-dashed border-transparent hover:border-primary pb-0.5"
+              >
+                <option value="Random">RANDOM MIX</option>
+                <option value="Everyday Life">EVERYDAY LIFE</option>
+                <option value="Personal Development">PERSONAL DEV</option>
+                <option value="Technology">TECHNOLOGY</option>
+                <option value="Society & Current Issues">SOCIETY & ISSUES</option>
+                <option value="Opinion & Abstract Topics">OPINION & ABSTRACT</option>
+              </select>
               <div className="flex gap-4">
                 <button onClick={handleSpeak} className="hover:text-primary transition-colors"><Volume2 size={20} /></button>
                 <button onClick={handleCopy} className="hover:text-primary transition-colors"><Copy size={20} /></button>

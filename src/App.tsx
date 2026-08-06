@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import { Scene } from './components/3d/Scene';
+const Scene = lazy(() => import('./components/3d/Scene').then(module => ({ default: module.Scene })));
 import { CustomCursor } from './components/ui/CustomCursor';
 import { useStore } from './store/useStore';
 import { useGlobalClickSound } from './hooks/useClickSound';
@@ -33,8 +33,10 @@ function App() {
         <div className="relative min-h-screen bg-background text-primary font-sans overflow-x-hidden selection:bg-primary selection:text-background transition-colors duration-700">
           <CustomCursor />
           
-          {/* 3D Background */}
-          <Scene />
+          {/* 3D Background - Lazy Loaded for <2s TTI */}
+          <Suspense fallback={null}>
+            <Scene />
+          </Suspense>
 
           {/* Header */}
           <header className="fixed top-0 left-0 w-full p-6 flex justify-between items-center z-50 pointer-events-auto">
@@ -42,18 +44,6 @@ function App() {
               Vocentra.
             </Link>
             <nav className="flex gap-6 text-sm font-medium text-secondary items-center">
-              <select 
-                value={preferredCategory}
-                onChange={(e) => setPreferredCategory(e.target.value)}
-                className="bg-transparent hover:text-primary transition-colors cursor-pointer outline-none font-medium hidden md:block"
-              >
-                <option value="Random">Random</option>
-                <option value="Everyday Life">Everyday Life</option>
-                <option value="Personal Development">Personal Development</option>
-                <option value="Technology">Technology</option>
-                <option value="Society & Current Issues">Society & Current Issues</option>
-                <option value="Opinion & Abstract Topics">Opinion & Abstract Topics</option>
-              </select>
               <Link to="/blog" className="hover:text-primary transition-colors">Blog</Link>
               <button onClick={() => setIsFavoritesOpen(true)} className="hover:text-primary transition-colors">Favorites</button>
               <button className="hover:text-primary transition-colors">History</button>
