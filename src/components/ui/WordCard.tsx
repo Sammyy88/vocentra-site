@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, Heart, Copy } from 'lucide-react';
+import { Volume2, Heart, Copy, Mic } from 'lucide-react';
 import type { WordEntry } from '../../data/dictionary';
 import { useStore } from '../../store/useStore';
 import { TimerIsland } from './TimerIsland';
@@ -16,6 +16,8 @@ const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, onDiscover }) => {
   const [displayWord, setDisplayWord] = useState('');
   const [isScrambling, setIsScrambling] = useState(false);
+  const [speakTimerActive, setSpeakTimerActive] = useState(false);
+  const [speakTimeLeft, setSpeakTimeLeft] = useState(60);
   const { addFavorite, removeFavorite, favoriteWords, preferredCategory, setPreferredCategory } = useStore();
 
   const isFavorite = currentWord ? favoriteWords.includes(currentWord.word) : false;
@@ -95,6 +97,19 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
       console.error("Audio API not supported");
     }
   };
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (speakTimerActive && speakTimeLeft > 0) {
+      interval = setInterval(() => {
+        setSpeakTimeLeft(prev => prev - 1);
+      }, 1000);
+    } else if (speakTimeLeft === 0) {
+      setSpeakTimerActive(false);
+      playChime();
+    }
+    return () => clearInterval(interval);
+  }, [speakTimerActive, speakTimeLeft]);
 
   useEffect(() => {
     if (!currentWord) return;
@@ -302,13 +317,38 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
               </p>
             </div>
 
-            <div className={`transition-all duration-700 ${isScrambling ? 'opacity-20 blur-sm pointer-events-none' : 'opacity-100 blur-0'}`}>
+            <div className={`mt-12 flex items-center gap-4 transition-all duration-700 ${isScrambling ? 'opacity-20 blur-sm pointer-events-none' : 'opacity-100 blur-0'}`}>
+              <button
+                onClick={() => {
+                  if (speakTimerActive) {
+                    setSpeakTimerActive(false);
+                    setSpeakTimeLeft(60);
+                  } else {
+                    setSpeakTimerActive(true);
+                    setSpeakTimeLeft(60);
+                  }
+                }}
+                className={`shrink-0 w-[3.5rem] h-[3.5rem] rounded-full flex items-center justify-center transition-all duration-300 ${
+                  speakTimerActive 
+                    ? 'bg-red-500/20 dark:bg-red-500/20 backdrop-blur-md border border-red-500/40 shadow-[0_0_20px_rgba(239,68,68,0.3)] text-red-500' 
+                    : 'bg-red-50 hover:bg-red-100 dark:bg-red-500/5 dark:hover:bg-red-500/10 text-red-500/70 hover:text-red-500 border border-red-500/20'
+                }`}
+              >
+                {speakTimerActive ? (
+                  <span className="font-bold font-mono text-sm animate-[pulse_1s_ease-in-out_infinite]">{speakTimeLeft}</span>
+                ) : (
+                  <Mic size={22} />
+                )}
+              </button>
+
               <button
                 onClick={() => {
                   playChime();
                   onDiscover();
+                  setSpeakTimerActive(false);
+                  setSpeakTimeLeft(60);
                 }}
-                className="mt-12 px-8 py-4 bg-primary/5 hover:bg-primary/10 text-primary rounded-full font-medium tracking-wide transition-colors duration-300"
+                className="px-8 py-4 bg-primary/5 hover:bg-primary/10 text-primary rounded-full font-medium tracking-wide transition-colors duration-300 flex-1"
               >
                 Next Word
               </button>
