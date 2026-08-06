@@ -350,49 +350,49 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
             initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
             animate={{ opacity: 1, backdropFilter: 'blur(24px)' }}
             exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-            className="fixed inset-0 z-[200] flex flex-col items-center justify-between py-20 bg-background/90 dark:bg-[#111111]/90"
+            className="fixed inset-0 z-[200] flex flex-col items-center justify-between py-20 bg-background/70 dark:bg-black/70"
           >
-            {/* Top: Word Name */}
+            {/* Top: Word Name in Glass Pill */}
             <motion.h3 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-xl md:text-2xl tracking-[0.2em] uppercase font-bold text-[#D07C50] drop-shadow-sm"
+              className="text-xl md:text-2xl tracking-[0.2em] uppercase font-bold text-red-500 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)] bg-white/40 dark:bg-white/5 backdrop-blur-xl border border-white/40 dark:border-white/10 px-10 py-4 rounded-full shadow-lg"
             >
               {currentWord?.word}
             </motion.h3>
 
-            {/* Center: Circular SVG Timer */}
+            {/* Center: Glowing Glassmorphic Circular Timer */}
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="relative flex items-center justify-center w-72 h-72 md:w-96 md:h-96"
+              className="relative flex items-center justify-center w-72 h-72 md:w-96 md:h-96 bg-red-500/5 dark:bg-red-500/10 backdrop-blur-3xl border border-red-500/20 rounded-full shadow-[0_0_100px_rgba(239,68,68,0.25)]"
             >
-              <svg className="absolute inset-0 w-full h-full -rotate-90 drop-shadow-2xl" viewBox="0 0 100 100">
+              <svg className="absolute inset-0 w-full h-full -rotate-90 drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]" viewBox="0 0 100 100">
                 <circle 
-                  className="text-[#333333]" 
-                  strokeWidth="4" 
+                  className="text-primary/10 dark:text-white/5" 
+                  strokeWidth="3" 
                   stroke="currentColor" 
                   fill="transparent" 
-                  r="46" 
+                  r="47" 
                   cx="50" 
                   cy="50" 
                 />
                 <circle 
-                  className="text-[#D07C50] transition-all duration-1000 ease-linear" 
+                  className="text-red-500 transition-all duration-1000 ease-linear" 
                   strokeWidth="4" 
                   strokeLinecap="round" 
                   stroke="currentColor" 
                   fill="transparent" 
-                  r="46" 
+                  r="47" 
                   cx="50" 
                   cy="50" 
-                  strokeDasharray="289.026" 
-                  strokeDashoffset={289.026 * (1 - speakTimeLeft / 60)} 
+                  strokeDasharray="295.31" 
+                  strokeDashoffset={295.31 * (1 - speakTimeLeft / 60)} 
                 />
               </svg>
               
-              <span className="font-serif text-[5rem] md:text-[6.5rem] text-[#D07C50] tracking-tighter" style={{ fontVariantNumeric: 'tabular-nums' }}>
+              <span className="font-serif text-[5rem] md:text-[6.5rem] text-red-500 font-bold tracking-tighter drop-shadow-[0_0_25px_rgba(239,68,68,0.9)]" style={{ fontVariantNumeric: 'tabular-nums' }}>
                 {Math.floor(speakTimeLeft / 60)}:{(speakTimeLeft % 60).toString().padStart(2, '0')}
               </span>
             </motion.div>
@@ -403,7 +403,7 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
               animate={{ opacity: 1, y: 0 }}
               className="flex flex-col items-center gap-6"
             >
-              <span className="text-xl md:text-2xl font-light text-primary/80 tracking-wide">
+              <span className="text-xl md:text-2xl font-light text-red-500/90 tracking-[0.3em] uppercase drop-shadow-[0_0_10px_rgba(239,68,68,0.4)]">
                 Speak.
               </span>
               <button
@@ -411,7 +411,7 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
                   setSpeakTimerActive(false);
                   setSpeakTimeLeft(60);
                 }}
-                className="text-secondary/60 hover:text-primary transition-colors text-sm uppercase tracking-widest underline underline-offset-[6px]"
+                className="text-secondary hover:text-red-500 transition-colors text-sm uppercase tracking-widest underline underline-offset-[6px] decoration-red-500/30 hover:decoration-red-500"
               >
                 Close
               </button>
