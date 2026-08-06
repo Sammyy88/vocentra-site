@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, Heart, Copy, Mic, X } from 'lucide-react';
+import { Volume2, Heart, Copy, Mic } from 'lucide-react';
 import type { WordEntry } from '../../data/dictionary';
 import { useStore } from '../../store/useStore';
 import { TimerIsland } from './TimerIsland';
@@ -99,7 +99,7 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
   };
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (speakTimerActive && speakTimeLeft > 0) {
       interval = setInterval(() => {
         setSpeakTimeLeft(prev => prev - 1);
