@@ -12,6 +12,7 @@ import { Home } from './pages/Home';
 import { BlogList } from './pages/BlogList';
 import { BlogPost } from './pages/BlogPost';
 import { AdminPanel } from './pages/AdminPanel';
+import { Pomofocus } from './pages/Pomofocus';
 
 function App() {
   useGlobalClickSound();
@@ -44,6 +45,7 @@ function App() {
               Vocentra.
             </Link>
             <nav className="flex gap-6 text-sm font-medium text-secondary items-center">
+              <Link to="/pomofocus" className="hover:text-primary transition-colors">Timer</Link>
               <Link to="/blog" className="hover:text-primary transition-colors">Blog</Link>
               <button onClick={() => setIsFavoritesOpen(true)} className="hover:text-primary transition-colors">Favorites</button>
               <button className="hover:text-primary transition-colors">History</button>
@@ -102,6 +104,7 @@ function App() {
           {/* Routes */}
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/pomofocus" element={<Pomofocus />} />
             <Route path="/blog" element={<BlogList />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/admin" element={<AdminPanel />} />
