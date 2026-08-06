@@ -70,36 +70,132 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
     }
   };
 
+  const playRevealSound = () => {
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(440, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
+      
+      gainNode.gain.setValueAtTime(0, ctx.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.05);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1);
+      
+      osc.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      
+      osc.start();
+      osc.stop(ctx.currentTime + 1);
+    } catch (e) {
+      console.error("Audio API not supported");
+    }
+  };
+
   useEffect(() => {
     if (!currentWord) return;
     
     // Scrambling effect
     setIsScrambling(true);
-    let iterations = 0;
     const targetWord = currentWord.word.toUpperCase();
+    const duration = 3000; // 3 seconds stretch
+    const startTime = performance.now();
+    let animationFrameId: number;
+
+    // --- Audio setup for scrambling SFX ---
+    let sfxCtx: AudioContext | null = null;
+    let sfxGain: GainNode | null = null;
+    let sfxLfo: OscillatorNode | null = null;
     
-    const interval = setInterval(() => {
+    try {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioCtx) {
+        sfxCtx = new AudioCtx();
+        const sfxOsc = sfxCtx.createOscillator();
+        sfxGain = sfxCtx.createGain();
+        
+        // Create a fast clicking/ticking sound using high frequency sine modulated rapidly
+        sfxOsc.type = 'square';
+        sfxOsc.frequency.setValueAtTime(100, sfxCtx.currentTime); // Low pitch click
+        
+        sfxLfo = sfxCtx.createOscillator();
+        sfxLfo.type = 'sawtooth';
+        sfxLfo.frequency.setValueAtTime(40, sfxCtx.currentTime); // 40 ticks per second initially
+        const lfoGain = sfxCtx.createGain();
+        lfoGain.gain.setValueAtTime(200, sfxCtx.currentTime);
+        sfxLfo.connect(lfoGain);
+        lfoGain.connect(sfxOsc.frequency);
+        
+        sfxGain.gain.setValueAtTime(0, sfxCtx.currentTime);
+        sfxGain.gain.linearRampToValueAtTime(0.04, sfxCtx.currentTime + 0.1);
+        
+        sfxOsc.connect(sfxGain);
+        sfxGain.connect(sfxCtx.destination);
+        
+        sfxLfo.start();
+        sfxOsc.start();
+      }
+    } catch (e) {
+      console.error("Audio API not supported");
+    }
+    // ----------------------------------------
+
+    const easeOutQuart = (x: number): number => {
+      return 1 - Math.pow(1 - x, 4);
+    };
+
+    const animate = (time: number) => {
+      const elapsed = time - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Fast start, slow stop
+      const easedProgress = easeOutQuart(progress);
+      const revealedCount = Math.floor(easedProgress * targetWord.length);
+
+      // Slow down the ticking sound as we near the end
+      if (sfxLfo && sfxCtx) {
+        const currentTicksPerSec = 40 - (35 * easedProgress); // Slow from 40 down to 5 ticks
+        sfxLfo.frequency.setValueAtTime(Math.max(2, currentTicksPerSec), sfxCtx.currentTime);
+      }
+
       setDisplayWord(
         targetWord
           .split("")
           .map((_, index) => {
-            if (index < iterations) {
+            if (index < revealedCount) {
               return targetWord[index];
             }
             return LETTERS[Math.floor(Math.random() * 26)];
           })
           .join("")
       );
-      
-      if (iterations >= targetWord.length) {
-        clearInterval(interval);
-        setIsScrambling(false);
-      }
-      
-      iterations += 1/3; // Speed of unscrambling
-    }, 30);
 
-    return () => clearInterval(interval);
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(animate);
+      } else {
+        setIsScrambling(false);
+        if (sfxGain && sfxCtx) {
+          sfxGain.gain.linearRampToValueAtTime(0, sfxCtx.currentTime + 0.05);
+          setTimeout(() => { if (sfxCtx) sfxCtx.close(); }, 100);
+        }
+        playRevealSound();
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      if (sfxGain && sfxCtx) {
+        try {
+          sfxGain.gain.linearRampToValueAtTime(0, sfxCtx.currentTime + 0.05);
+          setTimeout(() => { if (sfxCtx && sfxCtx.state !== 'closed') sfxCtx.close(); }, 100);
+        } catch(e) {}
+      }
+    };
   }, [currentWord]);
 
   return (
@@ -158,9 +254,11 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col items-center w-full max-w-2xl bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 p-8 md:p-14 rounded-[2.5rem] shadow-2xl relative transition-colors duration-700"
           >
-            <TimerIsland />
+            <div className={`transition-all duration-700 ${isScrambling ? 'opacity-20 blur-sm pointer-events-none' : 'opacity-100 blur-0'}`}>
+              <TimerIsland />
+            </div>
             
-            <div className="flex w-full justify-between items-center mb-6 text-secondary mt-2">
+            <div className={`flex w-full justify-between items-center mb-6 text-secondary mt-2 transition-all duration-700 ${isScrambling ? 'opacity-20 blur-sm pointer-events-none' : 'opacity-100 blur-0'}`}>
               <select 
                 value={preferredCategory}
                 onChange={(e) => setPreferredCategory(e.target.value)}
@@ -182,34 +280,39 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
               </div>
             </div>
 
-            <h2 className={`text-3xl md:text-5xl font-bold tracking-tighter text-primary mb-4 text-center break-words w-full px-4 ${isScrambling ? 'opacity-80' : 'opacity-100'}`}>
+            <h2 className={`text-3xl md:text-5xl font-bold tracking-tighter text-primary mb-4 text-center break-words w-full px-4 transition-all duration-300 ${isScrambling ? 'scale-110 drop-shadow-2xl' : 'scale-100 drop-shadow-none'}`}>
               {displayWord}
             </h2>
             
-            <p className="text-lg md:text-xl text-secondary mb-8">
+            <p className={`text-lg md:text-xl text-secondary mb-8 transition-all duration-700 ${isScrambling ? 'opacity-20 blur-sm pointer-events-none' : 'opacity-100 blur-0'}`}>
               {currentWord.pronunciation}
             </p>
             
-            <div className="flex items-center gap-3 text-[10px] md:text-xs font-semibold text-secondary uppercase tracking-widest border border-secondary/20 bg-white/30 dark:bg-white/5 px-4 py-2 rounded-full mb-10 shadow-sm transition-colors duration-700">
+            <div className={`flex items-center gap-3 text-[10px] md:text-xs font-semibold text-secondary uppercase tracking-widest border border-secondary/20 bg-white/30 dark:bg-white/5 px-4 py-2 rounded-full mb-10 shadow-sm transition-all duration-700 ${isScrambling ? 'opacity-20 blur-sm pointer-events-none' : 'opacity-100 blur-0'}`}>
               <span className="w-1.5 h-1.5 rounded-full bg-secondary/60 animate-pulse" />
               {currentWord.definition}
             </div>
 
-            <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-primary/20 to-transparent mb-8" />
+            <div className={`w-full h-[1px] bg-gradient-to-r from-transparent via-primary/20 to-transparent mb-8 transition-all duration-700 ${isScrambling ? 'opacity-20 blur-sm' : 'opacity-100 blur-0'}`} />
 
-            <div className="text-center w-full">
+            <div className={`text-center w-full transition-all duration-700 ${isScrambling ? 'opacity-20 blur-sm pointer-events-none' : 'opacity-100 blur-0'}`}>
               <span className="block text-xs uppercase tracking-widest text-secondary mb-3 font-semibold">Daily Challenge</span>
               <p className="text-lg text-primary/80 italic">
                 {currentPrompt}
               </p>
             </div>
 
-            <button
-              onClick={onDiscover}
-              className="mt-12 px-8 py-4 bg-primary/5 hover:bg-primary/10 text-primary rounded-full font-medium tracking-wide transition-colors duration-300"
-            >
-              Next Word
-            </button>
+            <div className={`transition-all duration-700 ${isScrambling ? 'opacity-20 blur-sm pointer-events-none' : 'opacity-100 blur-0'}`}>
+              <button
+                onClick={() => {
+                  playChime();
+                  onDiscover();
+                }}
+                className="mt-12 px-8 py-4 bg-primary/5 hover:bg-primary/10 text-primary rounded-full font-medium tracking-wide transition-colors duration-300"
+              >
+                Next Word
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
