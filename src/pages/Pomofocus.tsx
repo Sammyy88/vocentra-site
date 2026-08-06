@@ -56,22 +56,6 @@ export const Pomofocus: React.FC = () => {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  const renderTomatoes = () => {
-    return (
-      <div className="flex gap-4 justify-center mt-12 mb-8">
-        {[...Array(5)].map((_, i) => (
-          <div
-            key={i}
-            className={`w-10 h-10 rounded-full border-2 border-white/20 flex items-center justify-center transition-colors
-              ${i < (cycles % 5) ? 'bg-[#ff5757]/30 text-[#ff5757] border-[#ff5757]/50' : 'bg-transparent text-white/20'}
-            `}
-          >
-            <Timer size={20} />
-          </div>
-        ))}
-      </div>
-    );
-  };
 
   const handleStartPause = async () => {
     if (!isRunning && typeof (window as any).DeviceOrientationEvent !== 'undefined' && typeof (window as any).DeviceOrientationEvent.requestPermission === 'function') {
