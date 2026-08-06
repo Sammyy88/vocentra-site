@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment, Float, MeshDistortMaterial, Sparkles } from '@react-three/drei';
-import { EffectComposer, Bloom, DepthOfField, Noise } from '@react-three/postprocessing';
+import { EffectComposer, Bloom, Noise } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { useStore } from '../../store/useStore';
 
@@ -20,7 +20,7 @@ const MorphingGeometry = () => {
   return (
     <Float speed={2} rotationIntensity={0.5} floatIntensity={1}>
       <mesh ref={meshRef}>
-        <sphereGeometry args={[2.5, 64, 64]} />
+        <sphereGeometry args={[2.5, 32, 32]} />
         <MeshDistortMaterial 
           color={sphereColor}
           envMapIntensity={1} 
@@ -54,7 +54,7 @@ export const Scene: React.FC = () => {
   
   return (
     <div className="fixed inset-0 w-full h-full -z-10 pointer-events-none transition-colors duration-700">
-      <Canvas camera={{ position: [0, 0, 8], fov: 45 }} dpr={[1, 2]}>
+      <Canvas camera={{ position: [0, 0, 8], fov: 45 }} dpr={[1, 1.25]}>
         <color attach="background" args={[bgColor]} />
         
         {/* Ambient & Directional Lighting for calm cinematic feel */}
@@ -65,9 +65,9 @@ export const Scene: React.FC = () => {
         <Environment preset="city" />
         <fog attach="fog" args={[bgColor, 10, 20]} />
 
-        {/* Floating Particles */}
-        <Sparkles count={150} scale={15} size={2} speed={0.4} opacity={0.3} color={darkMode ? "#9CA3AF" : "#6B7280"} />
-        <Sparkles count={50} scale={10} size={4} speed={0.2} opacity={0.5} color={darkMode ? "#ffffff" : "#111111"} />
+        {/* Floating Particles - Reduced count for performance */}
+        <Sparkles count={50} scale={15} size={2} speed={0.4} opacity={0.3} color={darkMode ? "#9CA3AF" : "#6B7280"} />
+        <Sparkles count={20} scale={10} size={4} speed={0.2} opacity={0.5} color={darkMode ? "#ffffff" : "#111111"} />
 
         {/* Central Abstract Shape */}
         <MorphingGeometry />
@@ -75,10 +75,9 @@ export const Scene: React.FC = () => {
         {/* Camera Movement */}
         <MouseParallax />
 
-        {/* Post Processing */}
+        {/* Post Processing - Removed DepthOfField for mobile performance */}
         <EffectComposer>
           <Bloom luminanceThreshold={1} mipmapBlur intensity={0.5} />
-          <DepthOfField focusDistance={0} focalLength={0.02} bokehScale={2} height={480} />
           <Noise opacity={0.02} />
         </EffectComposer>
       </Canvas>
