@@ -40,6 +40,7 @@ export const Home: React.FC = () => {
 
   return (
     <main className="relative z-10 w-full min-h-screen flex items-center justify-center pointer-events-auto pt-20 md:pt-0 pb-10 md:pb-0">
+      <h1 className="sr-only">Vocentra - #1 Word Randomiser for Speaking Practice and Public Speaking</h1>
       <WordCard 
         currentWord={currentWord}
         currentPrompt={currentPrompt}

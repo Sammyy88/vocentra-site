@@ -226,9 +226,9 @@ export const WordCard: React.FC<WordCardProps> = ({ currentWord, currentPrompt, 
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="text-center flex flex-col items-center justify-center max-w-2xl"
           >
-            <h1 className="text-5xl md:text-7xl font-serif font-medium tracking-tight text-primary mb-6 leading-tight">
+            <h2 className="text-5xl md:text-7xl font-serif font-medium tracking-tight text-primary mb-6 leading-tight">
               Ready, for Domination?
-            </h1>
+            </h2>
             <p className="text-secondary/80 mb-8 text-sm md:text-base font-light tracking-wide leading-relaxed">
               We don't just practice. We transform.<br/>
               From ideas to impact — step into what's possible.
